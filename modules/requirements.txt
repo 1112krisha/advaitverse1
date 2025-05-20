@@ -1,6 +1,0 @@
-pandas
-plotly
-matplotlib
-matplotlib-venn
-pandas
-xlsxwriter
