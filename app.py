@@ -1,82 +1,25 @@
-# app.py
-
 import streamlit as st
 from utils.pdf_reader import extract_text
-from utils.module_parser import detect_modules
 
-# To hold PDF text globally for form module
-if 'pdf_text' not in st.session_state:
-    st.session_state['pdf_text'] = ""
+st.set_page_config(page_title="Advaitverse", page_icon="🔬", layout="wide")
 
-# ---------------- UI Setup ----------------
-st.set_page_config(page_title="Advaitverse", layout="wide")
+# Sidebar logo
+st.sidebar.image("Advait Logo.png", use_column_width=True)  # logo in root folder
 
-st.markdown(
-    "<h1 style='text-align:center; color:#0077B6;'>🌐 Advaitverse</h1>",
-    unsafe_allow_html=True
-)
+st.title("🔬 Advaitverse – Intelligent Web Generator")
+st.markdown("Upload a PDF and generate a smart web application prototype from it.")
 
-st.sidebar.image("assets/logo.png", use_column_width=True)  # optional logo
-st.sidebar.markdown("## 📂 Navigation")
+# File uploader
+uploaded_file = st.file_uploader("📄 Upload a PDF file", type="pdf")
 
-# Sidebar navigation with Smart Form added
-menu = st.sidebar.radio("Go to", ["Home", "PDF Upload", "Statistics", "Visualizations", "Venn Diagram", "Tables", "Smart Form"])
+if uploaded_file:
+    with st.spinner("Reading PDF..."):
+        raw_text = extract_text(uploaded_file)
 
-# ---------------- Routing Logic ----------------
-if menu == "Home":
-    st.markdown("""
-        <div style='color:#023E8A; font-size:18px;'>
-        Welcome to <b>Advaitverse</b> — your AI-powered diagnostic assistant.<br>
-        Upload a PDF with analysis instructions and let the system auto-build modules like statistics, plots, venn diagrams, and more.
-        </div>
-    """, unsafe_allow_html=True)
+    st.success("PDF processed successfully.")
+    st.subheader("📄 Extracted Text Preview")
+    st.write(raw_text[:1000] + "...")  # Preview first 1000 characters
 
-elif menu == "PDF Upload":
-    st.markdown("### 📄 Upload PDF with Instructions")
-    pdf_file = st.file_uploader("Upload PDF", type="pdf")
-
-    if pdf_file:
-        text = extract_text(pdf_file)
-        st.session_state['pdf_text'] = text  # Save globally for Smart Form
-
-        st.success("PDF loaded successfully!")
-        st.text_area("📑 PDF Content", text, height=300)
-
-        modules_found = detect_modules(text)
-        st.info(f"🧠 Modules Detected: {', '.join(modules_found)}")
-
-        if "statistics" in modules_found:
-            from modules.statistics import run_statistics
-            run_statistics()
-
-        if "visualizations" in modules_found:
-            from modules.visualizations import run_visualizations
-            run_visualizations()
-
-        if "venn" in modules_found:
-            from modules.venn_module import run_venn
-            run_venn()
-
-        if "tables" in modules_found:
-            from modules.tables import run_tables
-            run_tables()
-
-elif menu == "Statistics":
-    from modules.statistics import run_statistics
-    run_statistics()
-
-elif menu == "Visualizations":
-    from modules.visualizations import run_visualizations
-    run_visualizations()
-
-elif menu == "Venn Diagram":
-    from modules.venn_module import run_venn
-    run_venn()
-
-elif menu == "Tables":
-    from modules.tables import run_tables
-    run_tables()
-
-elif menu == "Smart Form":
-    from modules.smart_form import run_smart_form
-    run_smart_form(st.session_state.get('pdf_text'))
+    # In future: Add modules to auto-generate code/UI/statistics from this
+else:
+    st.info("Please upload a PDF to get started.")
