@@ -3,8 +3,6 @@ from utils.pdf_reader import extract_text
 
 st.set_page_config(page_title="Advaitverse", page_icon="🔬", layout="wide")
 
-# Sidebar logo
-st.sidebar.image("Advait Logo.png", use_container_width=True)
 
 st.title("🔬 Advaitverse – Intelligent Web Generator")
 st.markdown("Upload a PDF and generate a smart web application prototype from it.")
