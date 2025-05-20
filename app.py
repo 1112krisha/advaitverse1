@@ -4,6 +4,10 @@ import streamlit as st
 from utils.pdf_reader import extract_text
 from utils.module_parser import detect_modules
 
+# To hold PDF text globally for form module
+if 'pdf_text' not in st.session_state:
+    st.session_state['pdf_text'] = ""
+
 # ---------------- UI Setup ----------------
 st.set_page_config(page_title="Advaitverse", layout="wide")
 
@@ -15,8 +19,8 @@ st.markdown(
 st.sidebar.image("assets/logo.png", use_column_width=True)  # optional logo
 st.sidebar.markdown("## 📂 Navigation")
 
-# Sidebar navigation
-menu = st.sidebar.radio("Go to", ["Home", "PDF Upload", "Statistics", "Visualizations", "Venn Diagram", "Tables"])
+# Sidebar navigation with Smart Form added
+menu = st.sidebar.radio("Go to", ["Home", "PDF Upload", "Statistics", "Visualizations", "Venn Diagram", "Tables", "Smart Form"])
 
 # ---------------- Routing Logic ----------------
 if menu == "Home":
@@ -33,6 +37,8 @@ elif menu == "PDF Upload":
 
     if pdf_file:
         text = extract_text(pdf_file)
+        st.session_state['pdf_text'] = text  # Save globally for Smart Form
+
         st.success("PDF loaded successfully!")
         st.text_area("📑 PDF Content", text, height=300)
 
@@ -70,3 +76,7 @@ elif menu == "Venn Diagram":
 elif menu == "Tables":
     from modules.tables import run_tables
     run_tables()
+
+elif menu == "Smart Form":
+    from modules.smart_form import run_smart_form
+    run_smart_form(st.session_state.get('pdf_text'))
