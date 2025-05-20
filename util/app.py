@@ -1,6 +1,7 @@
 # app.py
 import streamlit as st
 from utils.pdf_reader import extract_text
+from utils.module_parser import detect_modules
 
 st.set_page_config(page_title="Advaitverse", layout="wide")
 
@@ -14,3 +15,18 @@ if pdf_file:
         text = extract_text(pdf_file)
         st.success("PDF loaded!")
         st.text_area("PDF Content", text, height=300)
+
+        modules_found = detect_modules(text)
+        st.info(f"📦 Modules Detected: {', '.join(modules_found)}")
+
+        if "statistics" in modules_found:
+            from modules.statistics import run_statistics
+            run_statistics()
+
+        if "visualizations" in modules_found:
+            from modules.visualizations import run_visualizations
+            run_visualizations()
+
+        if "venn" in modules_found:
+            from modules.venn_module import run_venn
+            run_venn()
